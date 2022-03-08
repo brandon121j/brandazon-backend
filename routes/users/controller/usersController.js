@@ -9,6 +9,6 @@ async function createUser(req, res, next) {
         let salt = await bcrypt.genSalt(12);
 
     } catch(err) {
-
+        console.log(err)
     }
 }
