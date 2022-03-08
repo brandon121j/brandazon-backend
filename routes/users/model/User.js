@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const uuid = require('uuid');
 
-const usersSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     id: { type: String, required: true, default: () =>  uuid.v4()},
     firstName: {
         type: String,
@@ -35,4 +35,4 @@ const usersSchema = new mongoose.Schema({
     usersWishlist: [{ type: mongoose.Schema.ObjectId, ref: 'products'}]
 }, {timestamps: true})
 
-module.exports = mongoose.model('users', usersSchema);
+module.exports = mongoose.model('user', userSchema);

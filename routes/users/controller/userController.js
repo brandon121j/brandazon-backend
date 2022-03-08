@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const Users = require('../model/Users');
+const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 
 async function createUser(req, res, next) {
@@ -9,7 +9,7 @@ async function createUser(req, res, next) {
 
         let hashedPassword = await bcrypt.hash(password, salt);
 
-        const createdUser = new Users({
+        const createdUser = new User({
             firstName: firstName,
             lastName: lastName,
             email: email,
@@ -32,7 +32,7 @@ async function login(req, res, next) {
     const { email, password } = req.body;
 
     try {
-        let foundUser = await Users.findOne({ email: email });
+        let foundUser = await User.findOne({ email: email });
 
         if (!foundUser) {
             res.status(404).json({
