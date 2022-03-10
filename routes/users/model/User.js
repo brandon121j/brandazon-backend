@@ -32,7 +32,8 @@ const userSchema = new mongoose.Schema({
         trim: true
     },
     isAdmin: { type: Boolean, required: true, default: false},
-    usersWishlist: [{ type: mongoose.Schema.ObjectId, ref: 'products'}]
+    usersWishlist: [{ type: mongoose.Schema.ObjectId, ref: 'products'}],
+    cart: [{ type: mongoose.Schema.ObjectId, ref: 'products'}]
 }, {timestamps: true})
 
 module.exports = mongoose.model('user', userSchema);

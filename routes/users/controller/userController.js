@@ -32,38 +32,33 @@ async function login(req, res, next) {
     const { email, password } = req.body;
 
     try {
-        let foundUser = await User.findOne({ email: email });
+        const foundUser = await User.findOne({ email: email, password: password });
 
         if (!foundUser) {
             res.status(404).json({
-                message: "ERROR",
-                error: "User not found"
+                message : "error",
+                error: "User not found. Please sign up!"
             })
-        } else {
-            let comparedPassword = await bcrypt.compare(password, foundUser.password);
-
-            if (!comparedPassword) {
-                res.status(404).json({
-                    message: "ERROR",
-                    error: "Incorrect login credentials"
-                })
-            } else {
-                let jwtToken = jwt.sign({
-                    firstName: foundUser.firstName,
-                    lastName: foundUser.lastName,
-                    email: foundUser.email,
-                    id: foundUser.id,
-                    isAdmin: foundUser.isAdmin
-                }, 
-                process.env.JWT_SECRET,
-                { expiresIn: "24h"});
-
-                res.json({
-                    message: "SUCCESS",
-                    token: jwtToken
-                });
-            }
         }
+
+        const jwtToken = jwt.sign({
+            userID: foundUser.id,
+            iat: Date.now()
+        }, process.env.JWT_SECRET, 
+        { expiresIn: "24h"})
+
+        const cleanFoundUser = {
+            id: foundUser.id,
+            firstName: foundUser.firstName,
+            lastName: foundUser.lastName,
+            email: foundUser.email,
+            isAdmin: foundUser.isAdmin
+        }
+        
+        res.cookie('session_token', jwtToken, { secure: false, httpOnly: true });
+
+        res.send({ user: cleanFoundUser })
+
     } catch(err) {
         res.json({
         message: "ERROR",
@@ -72,7 +67,12 @@ async function login(req, res, next) {
     }
 }
 
+function signout(req, res) {
+    res.clearCookie('session_token').send('Sign out successful')
+}
+
 module.exports = {
     createUser,
-    login
+    login,
+    signout
 }
