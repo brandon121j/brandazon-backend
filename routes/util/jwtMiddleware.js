@@ -9,9 +9,12 @@ function jwtMiddleware(req, res, next) {
 	}
 
 	try {
-        const data = jwt.verify(token, process.env.JWT_SECRET)
-	} catch (e) {
-		res.status(500).json({ message: 'ERROR', error: e.message });
+		const data = jwt.verify(token, process.env.JWT_SECRET)
+		
+
+		next();
+	} catch (err) {
+		res.status(500).json({ message: 'ERROR', error: err.message });
 	}
 }
 

@@ -55,7 +55,7 @@ async function login(req, res, next) {
             isAdmin: foundUser.isAdmin
         }
         
-        res.cookie('session_token', jwtToken, { secure: false, httpOnly: true });
+        res.cookie('access_token', jwtToken, { secure: false, httpOnly: true });
 
         res.send({ user: cleanFoundUser })
 
@@ -68,7 +68,7 @@ async function login(req, res, next) {
 }
 
 function signout(req, res) {
-    res.clearCookie('session_token').send('Sign out successful')
+    res.clearCookie('access_token').send('Sign out successful')
 }
 
 module.exports = {
