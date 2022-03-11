@@ -7,6 +7,7 @@ var cors = require('cors');
 var app = express();
 
 const userRouter = require('./routes/users/userRouter');
+const { jwtMiddleware } = require('./routes/util/jwtMiddleware');
 
 
 app.use(logger('dev'));
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors());
 app.options('*', cors());
+app.use(jwtMiddleware);
 
 app.use(userRouter);
 
