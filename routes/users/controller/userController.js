@@ -81,7 +81,7 @@ async function login(req, res) {
 
 				res.cookie('access_token', jwtToken, { secure: false, httpOnly: true });
 
-				res.send({ user: cleanFoundUser });
+				res.send({ user: cleanFoundUser, jwtToken });
 			}
 		}
 	} catch (err) {
@@ -92,25 +92,35 @@ async function login(req, res) {
 	}
 }
 
-async function userIsAdmin(req, res, next) {
-	try {
-		const foundUser = await User.findOne({ email: email });
-
-		if (!foundUser.isAdmin) {
-			res.status(500).json({message: "ERROR", error: "User does not have permission"});
-		} else {
-			next();
-		}
-	} catch (err) {}
-}
-
 function signout(req, res) {
 	res.clearCookie('access_token').send('Sign out successful');
+}
+
+async function makeUserAdmin(req, res) {
+	try {
+		const decodedToken = req.cookies.decodedToken;
+
+		const foundUser = await User.findOne({ userID: decodedToken.userID });
+
+		foundUser.isAdmin = true;
+
+		await foundUser.save();
+
+		res.send({
+			message: "SUCCESS",
+			isAdmin: foundUser.isAdmin
+		});
+	} catch(err) {
+		res.status(500).json({
+			message: "ERROR",
+			error: errorHandler(err)
+		});
+	}
 }
 
 module.exports = {
 	createUser,
 	login,
-	userIsAdmin,
 	signout,
+	makeUserAdmin
 };

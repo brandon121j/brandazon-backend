@@ -7,6 +7,7 @@ var cors = require('cors');
 var app = express();
 
 const userRouter = require('./routes/users/userRouter');
+const productRouter = require('./routes/products/productRouter');
 const { jwtMiddleware } = require('./routes/util/jwtMiddleware');
 
 
@@ -19,6 +20,7 @@ app.options('*', cors());
 app.use(jwtMiddleware);
 
 app.use(userRouter);
+app.use(productRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
