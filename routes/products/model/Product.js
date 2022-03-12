@@ -3,11 +3,6 @@ const validator = require('validator');
 const uuid = require('uuid');
 
 const productSchema = new mongoose.Schema({
-    id: { 
-        type: String, 
-        required: true, 
-        default: () => uuid.v4()
-    },
     category: {
         type: String,
         required: [true, 'Category is required'],

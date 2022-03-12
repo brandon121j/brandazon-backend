@@ -81,7 +81,7 @@ async function login(req, res) {
 
 				res.cookie('access_token', jwtToken, { secure: false, httpOnly: true });
 
-				res.send({ user: cleanFoundUser, jwtToken });
+				res.send({ user: cleanFoundUser });
 			}
 		}
 	} catch (err) {

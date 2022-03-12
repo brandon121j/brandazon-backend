@@ -3,7 +3,7 @@ const Products = require('../model/Product');
 const errorHandler = require('../../util/errorHandler');
 const formidable = require('formidable');
 const dotenv = require('dotenv');
-const cloudinary = require('cloudinary');
+const cloudinary = require('cloudinary').v2;
 
 dotenv.config();
 
@@ -21,7 +21,7 @@ async function getUserWishlist(req, res) {
 			userID: decodedToken.userID,
 		}).populate('usersWishlist');
 
-		res.json({ payload: foundUser });
+		res.json({ wishlist: foundUser.usersWishlist });
 	} catch (err) {
 		res.status(500).json({
 			message: 'ERROR',
@@ -57,7 +57,39 @@ async function createProduct(req, res) {
 	try {
 		const form = formidable({ multiples: true });
 
-		form.parse(req, (err, fields, files))
+		form.parse(req, (err, fields, files) => {
+			if (err) {
+				res.status(500).json({
+					message: 'ERROR',
+					error: errorHandler(err),
+				});
+			}
+
+			const { category, title, description, images, images_id, price } = fields;
+
+			const img = files.image.filepath;
+
+			cloudinary.uploader.upload(img, { folder: 'brandazon' }, async (error, result) => {
+					if (error) {
+						return res.status(500).json({ ERROR: error });
+					} else {
+						const createdProduct = new Products({
+							category,
+							title,
+							description,
+							image: result.secure_url,
+							image_id: result.public_id,
+							price,
+						});
+			
+						await createdProduct.save();
+
+						res.send({ createdProduct });
+					}
+				}
+			);
+
+		});
 	} catch (err) {
 		res.status(500).json({
 			message: 'ERROR',
@@ -100,7 +132,7 @@ async function addToUsersWishlist(req, res) {
 
 		res.json({
 			message: 'SUCCESS',
-			payload: foundUser.usersWishlist,
+			payload: "Product added to wishlist!",
 		});
 	} catch (err) {
 		res.status(500).json({
@@ -119,14 +151,16 @@ async function removeFromUsersWishlist(req, res) {
 		const foundUser = await Users.findOne({ userID: decodedToken.userID });
 
 		const filteredWishlist = foundUser.usersWishlist.filter((item) => {
-			return item.toString() !== product.id.toString();
+			return item.toString() !== product._id.toString();
 		});
 
-		foundUser.wishList = filteredWishlist;
+		foundUser.usersWishlist = filteredWishlist;
+
+		await foundUser.save()
 
 		res.json({
 			message: 'SUCCESS',
-			deleted: foundUser.wishlist,
+			deleted: "Product removed from wishlist!",
 		});
 	} catch (err) {
 		res.status(500).json({

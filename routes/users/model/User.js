@@ -3,7 +3,6 @@ const validator = require('validator');
 const uuid = require('uuid');
 
 const userSchema = new mongoose.Schema({
-    id: { type: String, required: true, default: () =>  uuid.v4()},
     firstName: {
         type: String,
         required: [true, 'Please input first name'],
@@ -34,6 +33,6 @@ const userSchema = new mongoose.Schema({
     isAdmin: { type: Boolean, required: true, default: false},
     usersWishlist: [{ type: mongoose.Schema.ObjectId, ref: 'products'}],
     cart: [{ type: mongoose.Schema.ObjectId, ref: 'products'}]
-}, {timestamps: true})
+}, { timestamps: true })
 
 module.exports = mongoose.model('user', userSchema);
