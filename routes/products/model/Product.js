@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
-const uuid = require('uuid');
 
 const productSchema = new mongoose.Schema({
     category: {
@@ -9,7 +7,7 @@ const productSchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        required: true
+        required: [true, 'Title is required']
     },
     description: {
         type: String,
@@ -17,14 +15,14 @@ const productSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: true
+        required: [true, 'Image is required']
     },
     image_id: {
         type: String,
     },
     price: {
         type: Number,
-        required: true
+        required: [true, 'Price is required']
     }
 }, { timestamps: true })
 

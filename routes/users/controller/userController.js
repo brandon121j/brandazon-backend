@@ -77,6 +77,8 @@ async function login(req, res) {
 					lastName: foundUser.lastName,
 					email: foundUser.email,
 					isAdmin: foundUser.isAdmin,
+					usersWishlist: foundUser.usersWishlist,
+					usersCart: foundUser.usersCart
 				};
 
 				res.cookie('access_token', jwtToken, { secure: false, httpOnly: true });
@@ -118,9 +120,35 @@ async function makeUserAdmin(req, res) {
 	}
 }
 
+async function getUserInfo(req, res) {
+	try {
+		const decodedToken = req.cookies.decodedToken;
+
+		const foundUser = await User.findOne({ userID: decodedToken.userID });
+
+		const cleanFoundUser = {
+			id: foundUser.id,
+			firstName: foundUser.firstName,
+			lastName: foundUser.lastName,
+			email: foundUser.email,
+			isAdmin: foundUser.isAdmin,
+			usersWishlist: foundUser.usersWishlist,
+			usersCart: foundUser.usersCart
+		};
+
+		res.send({
+			payload: cleanFoundUser
+		})
+	} catch(err) {
+		console.log(err)
+	}
+
+}
+
 module.exports = {
 	createUser,
 	login,
 	signout,
-	makeUserAdmin
+	makeUserAdmin,
+	getUserInfo
 };

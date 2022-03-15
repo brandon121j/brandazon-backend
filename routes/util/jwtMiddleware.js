@@ -20,7 +20,7 @@ function jwtMiddleware(req, res, next) {
 }
 
 // implementing user permission, user must be loggged in.
-function checkUserIsLoggedIn(req, res, next){
+function checkUserIsLoggedIn(req, res, next) {
 	if (req.cookies.decodedToken){
 		next();
 	} else {

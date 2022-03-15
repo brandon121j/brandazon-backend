@@ -1,18 +1,17 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const uuid = require('uuid');
 
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
         required: [true, 'Please input first name'],
-        match: [/^[a-z]+$/i, 'Cannot have special characters or numbers'],
+        match: [/^[a-z]+$/i, 'Cannot contain special characters or numbers'],
         trim: true
     },
     lastName: {
         type: String,
         required: [true, 'Please input last name'],
-        match: [/^[a-z]+$/i, 'Cannot have special characters or numbers'],
+        match: [/^[a-z]+$/i, 'Cannot contain special characters or numbers'],
         trim: true
     },
     email: {
@@ -32,7 +31,7 @@ const userSchema = new mongoose.Schema({
     },
     isAdmin: { type: Boolean, required: true, default: false},
     usersWishlist: [{ type: mongoose.Schema.ObjectId, ref: 'products'}],
-    cart: [{ type: mongoose.Schema.ObjectId, ref: 'products'}]
+    usersCart: [{ type: mongoose.Schema.ObjectId, ref: 'products'}]
 }, { timestamps: true })
 
 module.exports = mongoose.model('user', userSchema);

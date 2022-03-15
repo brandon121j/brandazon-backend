@@ -7,7 +7,10 @@ const {
 	deleteProduct,
 	addToUsersWishlist,
 	removeFromUsersWishlist,
-    userIsAdmin
+    userIsAdmin,
+	addToCart,
+	getUsersCart,
+	removeFromUsersCart
 } = require('../products/controller/productController');
 const { checkUserIsLoggedIn } = require("../util/jwtMiddleware");
 const router = express.Router();
@@ -24,6 +27,12 @@ router.delete('/delete-product/:id', checkUserIsLoggedIn, userIsAdmin, deletePro
 
 router.post('/add-to-wishlist/:id', checkUserIsLoggedIn, addToUsersWishlist);
 
+router.post('/add-to-cart/:id', checkUserIsLoggedIn, addToCart);
+
 router.delete('/remove-from-wishlist/:id', checkUserIsLoggedIn, removeFromUsersWishlist);
+
+router.get('/checkout', checkUserIsLoggedIn, getUsersCart);
+
+router.delete('/remove-from-cart/:id', checkUserIsLoggedIn, removeFromUsersCart);
 
 module.exports = router;

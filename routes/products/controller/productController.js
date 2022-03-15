@@ -131,8 +131,94 @@ async function addToUsersWishlist(req, res) {
 		await foundUser.save();
 
 		res.json({
-			message: 'SUCCESS',
-			payload: "Product added to wishlist!",
+			message: 'Product added to wishlist!',
+		});
+	} catch (err) {
+		res.status(500).json({
+			message: 'ERROR',
+			error: errorHandler(err),
+		});
+	}
+}
+
+async function addToCart(req, res) {
+	try {
+		const decodedToken = req.cookies.decodedToken;
+
+		const foundUser = await Users.findOne({ userID: decodedToken.userID });
+
+		foundUser.usersCart.push(req.params.id);
+
+		await foundUser.save();
+
+		const cleanFoundUser = {
+			id: foundUser.id,
+			firstName: foundUser.firstName,
+			lastName: foundUser.lastName,
+			email: foundUser.email,
+			isAdmin: foundUser.isAdmin,
+			usersWishlist: foundUser.usersWishlist,
+			usersCart: foundUser.usersCart
+		};
+
+		res.json({
+			message: 'Product added to cart!',
+			user: cleanFoundUser,
+		});
+	} catch(err) {
+		res.status(500).json({
+			message: 'ERROR',
+			error: errorHandler(err),
+		});
+	}
+}
+
+async function getUsersCart(req, res) {
+	try {
+		const decodedToken = req.cookies.decodedToken;
+
+		const foundUser = await Users.findOne({
+			userID: decodedToken.userID,
+		}).populate('usersCart');
+
+		res.json({ cart: foundUser.usersCart });
+	} catch (err) {
+		res.status(500).json({
+			message: 'ERROR',
+			error: errorHandler(err),
+		});
+	}
+}
+
+async function removeFromUsersCart(req, res) {
+	try {
+		const product = await Products.findById(req.params.id);
+
+		const decodedToken = req.cookies.decodedToken;
+
+		const foundUser = await Users.findOne({ userID: decodedToken.userID });
+
+		const filteredCart = foundUser.usersCart.filter((item) => {
+			return item.toString() !== product._id.toString();
+		});
+
+		foundUser.usersCart = filteredCart;
+
+		await foundUser.save();
+
+		const cleanFoundUser = {
+			id: foundUser.id,
+			firstName: foundUser.firstName,
+			lastName: foundUser.lastName,
+			email: foundUser.email,
+			isAdmin: foundUser.isAdmin,
+			usersWishlist: foundUser.usersWishlist,
+			usersCart: foundUser.usersCart
+		};
+
+		res.json({
+			message: 'Product removed from cart!',
+			user: cleanFoundUser,
 		});
 	} catch (err) {
 		res.status(500).json({
@@ -156,11 +242,21 @@ async function removeFromUsersWishlist(req, res) {
 
 		foundUser.usersWishlist = filteredWishlist;
 
-		await foundUser.save()
+		await foundUser.save();
+
+		const cleanFoundUser = {
+			id: foundUser.id,
+			firstName: foundUser.firstName,
+			lastName: foundUser.lastName,
+			email: foundUser.email,
+			isAdmin: foundUser.isAdmin,
+			usersWishlist: foundUser.usersWishlist,
+			usersCart: foundUser.usersCart
+		};
 
 		res.json({
-			message: 'SUCCESS',
-			deleted: "Product removed from wishlist!",
+			message: 'Product removed from wishlist',
+			user: cleanFoundUser,
 		});
 	} catch (err) {
 		res.status(500).json({
@@ -195,4 +291,7 @@ module.exports = {
 	addToUsersWishlist,
 	removeFromUsersWishlist,
 	userIsAdmin,
+	addToCart,
+	getUsersCart,
+	removeFromUsersCart
 };
