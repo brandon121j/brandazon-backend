@@ -192,7 +192,7 @@ async function getUsersCart(req, res) {
 
 		const foundUser = await Users.findOne({
 			userID: decodedToken.userID,
-		})
+		}).populate('cart')
 
 		res.json({ cart: foundUser.cart });
 	} catch (err) {
