@@ -10,7 +10,8 @@ const {
     userIsAdmin,
 	addToCart,
 	getUsersCart,
-	removeFromUsersCart
+	removeFromUsersCart,
+	itemInWishlist
 } = require('../products/controller/productController');
 const { checkUserIsLoggedIn } = require("../util/jwtMiddleware");
 const router = express.Router();

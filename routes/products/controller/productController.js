@@ -19,9 +19,9 @@ async function getUserWishlist(req, res) {
 
 		const foundUser = await Users.findOne({
 			userID: decodedToken.userID,
-		}).populate('usersWishlist');
+		}).populate('wishlist');
 
-		res.json({ wishlist: foundUser.usersWishlist });
+		res.json({ wishlist: foundUser.wishlist });
 	} catch (err) {
 		res.status(500).json({
 			message: 'ERROR',
@@ -69,7 +69,10 @@ async function createProduct(req, res) {
 
 			const img = files.image.filepath;
 
-			cloudinary.uploader.upload(img, { folder: 'brandazon' }, async (error, result) => {
+			cloudinary.uploader.upload(
+				img,
+				{ folder: 'brandazon' },
+				async (error, result) => {
 					if (error) {
 						return res.status(500).json({ ERROR: error });
 					} else {
@@ -81,14 +84,13 @@ async function createProduct(req, res) {
 							image_id: result.public_id,
 							price,
 						});
-			
+
 						await createdProduct.save();
 
 						res.send({ createdProduct });
 					}
 				}
 			);
-
 		});
 	} catch (err) {
 		res.status(500).json({
@@ -126,12 +128,23 @@ async function addToUsersWishlist(req, res) {
 
 		const foundUser = await Users.findOne({ userID: decodedToken.userID });
 
-		foundUser.usersWishlist.push(req.params.id);
+		foundUser.wishlist.push(req.params.id);
 
 		await foundUser.save();
 
+		const cleanFoundUser = {
+			id: foundUser.id,
+			firstName: foundUser.firstName,
+			lastName: foundUser.lastName,
+			email: foundUser.email,
+			isAdmin: foundUser.isAdmin,
+			wishlist: foundUser.wishlist,
+			cart: foundUser.cart,
+		};
+
 		res.json({
 			message: 'Product added to wishlist!',
+			user: cleanFoundUser,
 		});
 	} catch (err) {
 		res.status(500).json({
@@ -147,7 +160,7 @@ async function addToCart(req, res) {
 
 		const foundUser = await Users.findOne({ userID: decodedToken.userID });
 
-		foundUser.usersCart.push(req.params.id);
+		foundUser.cart.push(req.params.id);
 
 		await foundUser.save();
 
@@ -157,15 +170,15 @@ async function addToCart(req, res) {
 			lastName: foundUser.lastName,
 			email: foundUser.email,
 			isAdmin: foundUser.isAdmin,
-			usersWishlist: foundUser.usersWishlist,
-			usersCart: foundUser.usersCart
+			wishlist: foundUser.wishlist,
+			cart: foundUser.cart,
 		};
 
 		res.json({
 			message: 'Product added to cart!',
 			user: cleanFoundUser,
 		});
-	} catch(err) {
+	} catch (err) {
 		res.status(500).json({
 			message: 'ERROR',
 			error: errorHandler(err),
@@ -179,9 +192,9 @@ async function getUsersCart(req, res) {
 
 		const foundUser = await Users.findOne({
 			userID: decodedToken.userID,
-		}).populate('usersCart');
+		})
 
-		res.json({ cart: foundUser.usersCart });
+		res.json({ cart: foundUser.cart });
 	} catch (err) {
 		res.status(500).json({
 			message: 'ERROR',
@@ -198,11 +211,11 @@ async function removeFromUsersCart(req, res) {
 
 		const foundUser = await Users.findOne({ userID: decodedToken.userID });
 
-		const filteredCart = foundUser.usersCart.filter((item) => {
+		const filteredCart = foundUser.cart.filter((item) => {
 			return item.toString() !== product._id.toString();
 		});
 
-		foundUser.usersCart = filteredCart;
+		foundUser.cart = filteredCart;
 
 		await foundUser.save();
 
@@ -212,8 +225,8 @@ async function removeFromUsersCart(req, res) {
 			lastName: foundUser.lastName,
 			email: foundUser.email,
 			isAdmin: foundUser.isAdmin,
-			usersWishlist: foundUser.usersWishlist,
-			usersCart: foundUser.usersCart
+			wishlist: foundUser.wishlist,
+			cart: foundUser.cart,
 		};
 
 		res.json({
@@ -236,11 +249,11 @@ async function removeFromUsersWishlist(req, res) {
 
 		const foundUser = await Users.findOne({ userID: decodedToken.userID });
 
-		const filteredWishlist = foundUser.usersWishlist.filter((item) => {
+		const filteredWishlist = foundUser.wishlist.filter((item) => {
 			return item.toString() !== product._id.toString();
 		});
 
-		foundUser.usersWishlist = filteredWishlist;
+		foundUser.wishlist = filteredWishlist;
 
 		await foundUser.save();
 
@@ -250,8 +263,8 @@ async function removeFromUsersWishlist(req, res) {
 			lastName: foundUser.lastName,
 			email: foundUser.email,
 			isAdmin: foundUser.isAdmin,
-			usersWishlist: foundUser.usersWishlist,
-			usersCart: foundUser.usersCart
+			wishlist: foundUser.wishlist,
+			cart: foundUser.cart,
 		};
 
 		res.json({
@@ -279,7 +292,9 @@ async function userIsAdmin(req, res, next) {
 		} else {
 			next();
 		}
-	} catch (err) {}
+	} catch (err) {
+		console.log(err);
+	}
 }
 
 module.exports = {
@@ -293,5 +308,5 @@ module.exports = {
 	userIsAdmin,
 	addToCart,
 	getUsersCart,
-	removeFromUsersCart
+	removeFromUsersCart,
 };

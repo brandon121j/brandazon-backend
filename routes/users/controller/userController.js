@@ -77,8 +77,8 @@ async function login(req, res) {
 					lastName: foundUser.lastName,
 					email: foundUser.email,
 					isAdmin: foundUser.isAdmin,
-					usersWishlist: foundUser.usersWishlist,
-					usersCart: foundUser.usersCart
+					wishlist: foundUser.wishlist,
+					cart: foundUser.cart
 				};
 
 				res.cookie('access_token', jwtToken, { secure: false, httpOnly: true });
@@ -132,12 +132,12 @@ async function getUserInfo(req, res) {
 			lastName: foundUser.lastName,
 			email: foundUser.email,
 			isAdmin: foundUser.isAdmin,
-			usersWishlist: foundUser.usersWishlist,
-			usersCart: foundUser.usersCart
+			wishlist: foundUser.wishlist,
+			cart: foundUser.cart
 		};
 
 		res.send({
-			payload: cleanFoundUser
+			user: cleanFoundUser
 		})
 	} catch(err) {
 		console.log(err)
