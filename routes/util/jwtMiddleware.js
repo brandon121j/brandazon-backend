@@ -21,12 +21,14 @@ function jwtMiddleware(req, res, next) {
 
 // implementing user permission, user must be loggged in.
 function checkUserIsLoggedIn(req, res, next) {
-	if (req.cookies.decodedToken){
+	if (req.cookies.access_token) {
 		next();
 	} else {
-		new Error('must be logged in')
+		res.status(500).json({ loggedIn: false})
 	}
 };
-module.exports = { jwtMiddleware, checkUserIsLoggedIn };
+
+
+module.exports = { jwtMiddleware, checkUserIsLoggedIn};
 
 

@@ -95,7 +95,7 @@ async function login(req, res) {
 }
 
 function signout(req, res) {
-	res.clearCookie('access_token').send('Sign out successful');
+	res.clearCookie('access_token').send({ message: "USER SIGNED OUT!"})
 }
 
 async function makeUserAdmin(req, res) {
@@ -140,15 +140,27 @@ async function getUserInfo(req, res) {
 			user: cleanFoundUser
 		})
 	} catch(err) {
-		console.log(err)
+		res.status(500).json({message: "ERROR", error: errorHandler(err) })
 	}
 
 }
+
+async function emptyCart(req, res) {
+	const decodedToken = req.cookies.decodedToken;
+
+	const foundUser = await User.findOne({ userID: decodedToken.userID });
+
+	foundUser.cart = [];
+
+	res.json({ cart: foundUser.cart })
+}
+
 
 module.exports = {
 	createUser,
 	login,
 	signout,
 	makeUserAdmin,
-	getUserInfo
+	getUserInfo,
+	emptyCart
 };

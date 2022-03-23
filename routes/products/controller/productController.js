@@ -19,9 +19,11 @@ async function getUserWishlist(req, res) {
 
 		const foundUser = await Users.findOne({
 			userID: decodedToken.userID,
-		}).populate('wishlist');
+		})
 
-		res.json({ wishlist: foundUser.wishlist });
+		const usersWishlist = await Products.find({_id: foundUser.wishlist});
+
+		res.json({ wishlist: usersWishlist });
 	} catch (err) {
 		res.status(500).json({
 			message: 'ERROR',
@@ -44,7 +46,9 @@ async function getSingleProduct(req, res) {
 	try {
 		const singleProduct = await Products.findById(req.params.id);
 
-		res.json({ message: 'SUCCESS', payload: singleProduct });
+		const otherProducts = await Products.find( { _id: { $nin: req.params.id } } );
+
+		res.json({ message: 'SUCCESS', productInfo: singleProduct, otherProducts: otherProducts });
 	} catch (err) {
 		res.status(500).json({
 			message: 'ERROR',
@@ -65,7 +69,7 @@ async function createProduct(req, res) {
 				});
 			}
 
-			const { category, title, description, images, images_id, price } = fields;
+			const { category, title, brand, description, images, images_id, price } = fields;
 
 			const img = files.image.filepath;
 
@@ -79,6 +83,7 @@ async function createProduct(req, res) {
 						const createdProduct = new Products({
 							category,
 							title,
+							brand,
 							description,
 							image: result.secure_url,
 							image_id: result.public_id,
@@ -186,15 +191,50 @@ async function addToCart(req, res) {
 	}
 }
 
+async function increaseQuantity(req, res) {
+	try {
+		const product = await Products.findById(req.params.id);
+
+		product.quantity += 1;
+
+		await product.save()
+
+	} catch(err) {
+		res.status(500).json({
+			message: 'ERROR',
+			error: errorHandler(err),
+		});
+	}
+}
+
+async function decreaseQuantity(req, res) {
+	try {
+		const product = await Products.findById(req.params.id);
+
+		if (product.quantity > 1) {
+			product.quantity -= 1;
+		}
+
+		await product.save();
+	} catch(err) {
+		res.status(500).json({
+			message: 'ERROR',
+			error: errorHandler(err),
+		});
+	}
+}
+
 async function getUsersCart(req, res) {
 	try {
 		const decodedToken = req.cookies.decodedToken;
 
 		const foundUser = await Users.findOne({
 			userID: decodedToken.userID,
-		}).populate('cart')
+		})
 
-		res.json({ cart: foundUser.cart });
+		const usersCart = await Products.find({_id: foundUser.cart});
+
+		res.json({ cart: usersCart });
 	} catch (err) {
 		res.status(500).json({
 			message: 'ERROR',
