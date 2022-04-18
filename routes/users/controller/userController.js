@@ -126,7 +126,6 @@ async function getUserInfo(req, res) {
 
 		const foundUser = await User.findOne({ userID: decodedToken.userID });
 
-
 		const cleanFoundUser = {
 			id: foundUser.id,
 			firstName: foundUser.firstName,
@@ -146,13 +145,32 @@ async function getUserInfo(req, res) {
 }
 
 async function emptyCart(req, res) {
+	try {
 	const decodedToken = req.cookies.decodedToken;
 
 	const foundUser = await User.findOne({ userID: decodedToken.userID });
 
 	foundUser.cart = [];
 
-	res.json({ cart: foundUser.cart })
+	await foundUser.save()
+
+	const cleanFoundUser = {
+		id: foundUser.id,
+		firstName: foundUser.firstName,
+		lastName: foundUser.lastName,
+		email: foundUser.email,
+		isAdmin: foundUser.isAdmin,
+		wishlist: foundUser.wishlist,
+		cart: foundUser.cart,
+	};
+
+	res.json({
+		message: 'Product removed from cart!',
+		user: cleanFoundUser,
+	});
+	} catch(err) {
+		res.status(500).json({message: "ERROR", error: errorHandler(err) })
+	}
 }
 
 

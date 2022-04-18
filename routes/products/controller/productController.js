@@ -246,6 +246,7 @@ async function removeFromUsersCart(req, res) {
 	}
 }
 
+
 async function removeFromUsersWishlist(req, res) {
 	try {
 		const product = await Products.findById(req.params.id);
