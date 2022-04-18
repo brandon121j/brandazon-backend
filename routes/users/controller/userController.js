@@ -126,6 +126,7 @@ async function getUserInfo(req, res) {
 
 		const foundUser = await User.findOne({ userID: decodedToken.userID });
 
+
 		const cleanFoundUser = {
 			id: foundUser.id,
 			firstName: foundUser.firstName,
@@ -142,7 +143,6 @@ async function getUserInfo(req, res) {
 	} catch(err) {
 		res.status(500).json({message: "ERROR", error: errorHandler(err) })
 	}
-
 }
 
 async function emptyCart(req, res) {

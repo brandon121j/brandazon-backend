@@ -60,7 +60,7 @@ async function getSingleProduct(req, res) {
 async function createProduct(req, res) {
 	try {
 		const form = formidable({ multiples: true });
-
+		
 		form.parse(req, (err, fields, files) => {
 			if (err) {
 				res.status(500).json({
@@ -68,11 +68,9 @@ async function createProduct(req, res) {
 					error: errorHandler(err),
 				});
 			}
-
-			const { category, title, brand, description, images, images_id, price } = fields;
-
+			
+			const { category, title, brand, description, image, image_id, price } = fields;
 			const img = files.image.filepath;
-
 			cloudinary.uploader.upload(
 				img,
 				{ folder: 'brandazon' },
@@ -184,39 +182,6 @@ async function addToCart(req, res) {
 			user: cleanFoundUser,
 		});
 	} catch (err) {
-		res.status(500).json({
-			message: 'ERROR',
-			error: errorHandler(err),
-		});
-	}
-}
-
-async function increaseQuantity(req, res) {
-	try {
-		const product = await Products.findById(req.params.id);
-
-		product.quantity += 1;
-
-		await product.save()
-
-	} catch(err) {
-		res.status(500).json({
-			message: 'ERROR',
-			error: errorHandler(err),
-		});
-	}
-}
-
-async function decreaseQuantity(req, res) {
-	try {
-		const product = await Products.findById(req.params.id);
-
-		if (product.quantity > 1) {
-			product.quantity -= 1;
-		}
-
-		await product.save();
-	} catch(err) {
 		res.status(500).json({
 			message: 'ERROR',
 			error: errorHandler(err),

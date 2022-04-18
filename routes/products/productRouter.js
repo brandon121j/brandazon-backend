@@ -11,7 +11,7 @@ const {
 	addToCart,
 	getUsersCart,
 	removeFromUsersCart,
-	itemInWishlist
+	itemInWishlist,
 } = require('../products/controller/productController');
 const { checkUserIsLoggedIn } = require("../util/jwtMiddleware");
 const router = express.Router();
