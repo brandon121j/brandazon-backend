@@ -23,8 +23,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(jwtMiddleware);
 
-app.use(userRouter);
-app.use(productRouter);
+app.use('/api/', userRouter);
+app.use('/api/', productRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
