@@ -10,8 +10,18 @@ const userRouter = require('./routes/users/userRouter');
 const productRouter = require('./routes/products/productRouter');
 const { jwtMiddleware } = require('./routes/util/jwtMiddleware');
 
-
-app.use(cors({origin: 'http://localhost:3000', credentials: true}));
+var whitelist = ['https://brandazon.brandon121j.com', 'http://localhost:3000']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true
+  }
+app.use(cors(corsOptions));
 // app.options('', cors());
 
 app.use(logger('dev'));
@@ -33,7 +43,7 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   
   // res.header("Access-Control-Allow-Origin", origin);
-  res.header("Access-Control-Allow-Credentials", true);
+  // res.header("Access-Control-Allow-Credentials", true);
   
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
