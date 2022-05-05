@@ -18,7 +18,7 @@ async function getUserWishlist(req, res) {
 		const decodedToken = req.cookies.decodedToken;
 
 		const foundUser = await Users.findOne({
-			userID: decodedToken.userID,
+			_id: decodedToken.userID,
 		})
 
 		const usersWishlist = await Products.find({_id: foundUser.wishlist});
@@ -129,14 +129,14 @@ async function addToUsersWishlist(req, res) {
 	try {
 		const decodedToken = req.cookies.decodedToken;
 
-		const foundUser = await Users.findOne({ userID: decodedToken.userID });
+		const foundUser = await Users.findOne({ _id: decodedToken.userID });
 
 		foundUser.wishlist.push(req.params.id);
 
 		await foundUser.save();
 
 		const cleanFoundUser = {
-			id: foundUser.id,
+			id: foundUser._id,
 			firstName: foundUser.firstName,
 			lastName: foundUser.lastName,
 			email: foundUser.email,
@@ -161,14 +161,14 @@ async function addToCart(req, res) {
 	try {
 		const decodedToken = req.cookies.decodedToken;
 
-		const foundUser = await Users.findOne({ userID: decodedToken.userID });
+		const foundUser = await Users.findOne({ _id: decodedToken.userID });
 
 		foundUser.cart.push(req.params.id);
 
 		await foundUser.save();
 
 		const cleanFoundUser = {
-			id: foundUser.id,
+			id: foundUser._id,
 			firstName: foundUser.firstName,
 			lastName: foundUser.lastName,
 			email: foundUser.email,
@@ -192,9 +192,9 @@ async function addToCart(req, res) {
 async function getUsersCart(req, res) {
 	try {
 		const decodedToken = req.cookies.decodedToken;
-
+		console.log('!!!DECODED TOKEN!!!', decodedToken);
 		const foundUser = await Users.findOne({
-			userID: decodedToken.userID,
+			_id: decodedToken.userID,
 		})
 
 		const usersCart = await Products.find({_id: foundUser.cart});
@@ -214,7 +214,7 @@ async function removeFromUsersCart(req, res) {
 
 		const decodedToken = req.cookies.decodedToken;
 
-		const foundUser = await Users.findOne({ userID: decodedToken.userID });
+		const foundUser = await Users.findOne({ _id: decodedToken.userID });
 
 		const filteredCart = foundUser.cart.filter((item) => {
 			return item.toString() !== product._id.toString();
@@ -225,7 +225,7 @@ async function removeFromUsersCart(req, res) {
 		await foundUser.save();
 
 		const cleanFoundUser = {
-			id: foundUser.id,
+			id: foundUser._id,
 			firstName: foundUser.firstName,
 			lastName: foundUser.lastName,
 			email: foundUser.email,
@@ -253,7 +253,7 @@ async function removeFromUsersWishlist(req, res) {
 
 		const decodedToken = req.cookies.decodedToken;
 
-		const foundUser = await Users.findOne({ userID: decodedToken.userID });
+		const foundUser = await Users.findOne({ _id: decodedToken.userID });
 
 		const filteredWishlist = foundUser.wishlist.filter((item) => {
 			return item.toString() !== product._id.toString();
@@ -264,7 +264,7 @@ async function removeFromUsersWishlist(req, res) {
 		await foundUser.save();
 
 		const cleanFoundUser = {
-			id: foundUser.id,
+			id: foundUser._id,
 			firstName: foundUser.firstName,
 			lastName: foundUser.lastName,
 			email: foundUser.email,
@@ -289,7 +289,7 @@ async function userIsAdmin(req, res, next) {
 	try {
 		const decodedToken = req.cookies.decodedToken;
 
-		const foundUser = await Users.findOne({ userID: decodedToken.userID });
+		const foundUser = await Users.findOne({ _id: decodedToken.userID });
 
 		if (!foundUser.isAdmin) {
 			res

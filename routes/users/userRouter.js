@@ -8,7 +8,7 @@ const { createUser, login, makeUserAdmin, signout, getUserInfo, emptyCart } = re
 
 router.post('/create-user', createUser);
 
-router.post('/login', login);
+router.post('/login', login, checkUserIsLoggedIn);
 
 router.post('/make-admin', checkUserIsLoggedIn, makeUserAdmin);
 

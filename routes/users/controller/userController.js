@@ -20,7 +20,7 @@ async function createUser(req, res) {
 		let savedUser = await createdUser.save();
 
 		const cleanSavedUser = {
-			id: savedUser.id,
+			id: savedUser._id,
 			firstName: savedUser.firstName,
 			lastName: savedUser.lastName,
 			email: savedUser.email,
@@ -64,7 +64,7 @@ async function login(req, res) {
 			} else {
 				const jwtToken = jwt.sign(
 					{
-						userID: foundUser.id,
+						userID: foundUser._id,
 						iat: Date.now(),
 					},
 					process.env.JWT_SECRET,
@@ -72,7 +72,7 @@ async function login(req, res) {
 					);
 					
 					const cleanFoundUser = {
-						id: foundUser.id,
+						id: foundUser._id,
 						firstName: foundUser.firstName,
 						lastName: foundUser.lastName,
 						email: foundUser.email,
@@ -82,7 +82,7 @@ async function login(req, res) {
 					};
 					
 					res.cookie('access_token', jwtToken);
-					
+
 					res.send({ user: cleanFoundUser });
 					console.log('LOGIN COOKIE: ', jwtToken);
 				}
@@ -103,7 +103,7 @@ async function makeUserAdmin(req, res) {
 	try {
 		const decodedToken = req.cookies.decodedToken;
 
-		const foundUser = await User.findOne({ userID: decodedToken.userID });
+		const foundUser = await User.findOne({ _id: decodedToken.userID });
 
 		foundUser.isAdmin = true;
 
@@ -126,10 +126,10 @@ async function getUserInfo(req, res) {
 		console.log('User Controller: ', req.cookies);
 		const decodedToken = req.cookies.decodedToken;
 
-		const foundUser = await User.findOne({ userID: decodedToken.userID });
+		const foundUser = await User.findOne({ _id: decodedToken.userID });
 
 		const cleanFoundUser = {
-			id: foundUser.id,
+			id: foundUser._id,
 			firstName: foundUser.firstName,
 			lastName: foundUser.lastName,
 			email: foundUser.email,
@@ -150,14 +150,14 @@ async function emptyCart(req, res) {
 	try {
 	const decodedToken = req.cookies.decodedToken;
 
-	const foundUser = await User.findOne({ userID: decodedToken.userID });
+	const foundUser = await User.findOne({ _id: decodedToken.userID });
 
 	foundUser.cart = [];
 
 	await foundUser.save()
 
 	const cleanFoundUser = {
-		id: foundUser.id,
+		id: foundUser._id,
 		firstName: foundUser.firstName,
 		lastName: foundUser.lastName,
 		email: foundUser.email,
