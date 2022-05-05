@@ -10,7 +10,7 @@ const userRouter = require('./routes/users/userRouter');
 const productRouter = require('./routes/products/productRouter');
 const { jwtMiddleware } = require('./routes/util/jwtMiddleware');
 
-var whitelist = ['https://brandazon.brandon121j.com', 'http://localhost:3000']
+var whitelist = [/\.brandon121j\.com$/, 'http://localhost:3000']
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
