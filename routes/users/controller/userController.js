@@ -69,22 +69,23 @@ async function login(req, res) {
 					},
 					process.env.JWT_SECRET,
 					{ expiresIn: '24h' }
-				);
-
-				const cleanFoundUser = {
-					id: foundUser.id,
-					firstName: foundUser.firstName,
-					lastName: foundUser.lastName,
-					email: foundUser.email,
-					isAdmin: foundUser.isAdmin,
-					wishlist: foundUser.wishlist,
-					cart: foundUser.cart
-				};
-
-				res.cookie('access_token', jwtToken, { secure: false, httpOnly: true });
-
-				res.send({ user: cleanFoundUser });
-			}
+					);
+					
+					const cleanFoundUser = {
+						id: foundUser.id,
+						firstName: foundUser.firstName,
+						lastName: foundUser.lastName,
+						email: foundUser.email,
+						isAdmin: foundUser.isAdmin,
+						wishlist: foundUser.wishlist,
+						cart: foundUser.cart
+					};
+					
+					res.cookie('access_token', jwtToken);
+					
+					res.send({ user: cleanFoundUser });
+					console.log('LOGIN COOKIE: ', jwtToken);
+				}
 		}
 	} catch (err) {
 		res.status(500).json({
@@ -122,6 +123,7 @@ async function makeUserAdmin(req, res) {
 
 async function getUserInfo(req, res) {
 	try {
+		console.log('User Controller: ', req.cookies);
 		const decodedToken = req.cookies.decodedToken;
 
 		const foundUser = await User.findOne({ userID: decodedToken.userID });

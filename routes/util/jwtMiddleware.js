@@ -21,6 +21,8 @@ function jwtMiddleware(req, res, next) {
 
 // implementing user permission, user must be loggged in.
 function checkUserIsLoggedIn(req, res, next) {
+	console.log('JWT Middleware 1: ', req.cookie);
+	console.log('JWT Middleware 2: ', req.cookies);
 	if (req.cookies.access_token) {
 		next();
 	} else {
