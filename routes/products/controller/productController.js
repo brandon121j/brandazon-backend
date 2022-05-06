@@ -131,6 +131,24 @@ async function addToUsersWishlist(req, res) {
 
 		const foundUser = await Users.findOne({ _id: decodedToken.userID });
 
+		let alreadyAdded = foundUser.wishlist.indexOf(req.params._id) > -1;
+
+		if (alreadyAdded) {
+
+			const cleanFoundUser = {
+				id: foundUser._id,
+				firstName: foundUser.firstName,
+				lastName: foundUser.lastName,
+				email: foundUser.email,
+				isAdmin: foundUser.isAdmin,
+				wishlist: foundUser.wishlist,
+				cart: foundUser.cart,
+			};
+
+			res.json({message: 'Product already in cart', user: cleanFoundUser})
+		} else {
+		
+
 		foundUser.wishlist.push(req.params.id);
 
 		await foundUser.save();
@@ -149,6 +167,7 @@ async function addToUsersWishlist(req, res) {
 			message: 'Product added to wishlist!',
 			user: cleanFoundUser,
 		});
+	}
 	} catch (err) {
 		res.status(500).json({
 			message: 'ERROR',
